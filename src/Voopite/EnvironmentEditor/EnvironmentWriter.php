@@ -35,11 +35,11 @@ class EnvironmentWriter implements WriterInterface
      * @var array
      */
     protected $entryTemplate = [
-        'line'    => null,
-        'type'    => 'empty',
-        'export'  => false,
-        'key'     => '',
-        'value'   => '',
+        'line' => null,
+        'type' => 'empty',
+        'export' => false,
+        'key' => '',
+        'value' => '',
         'comment' => '',
     ];
 
@@ -49,18 +49,6 @@ class EnvironmentWriter implements WriterInterface
     public function __construct(FormatterInterface $formatter)
     {
         $this->formatter = $formatter;
-    }
-
-    /**
-     * Set buffer with content.
-     *
-     * @return EnvironmentWriter
-     */
-    public function setBuffer(array $content = [])
-    {
-        $this->buffer = $content;
-
-        return $this;
     }
 
     /**
@@ -80,6 +68,40 @@ class EnvironmentWriter implements WriterInterface
     }
 
     /**
+     * Set buffer with content.
+     *
+     * @return EnvironmentWriter
+     */
+    public function setBuffer(array $content = [])
+    {
+        $this->buffer = $content;
+
+        return $this;
+    }
+
+    /**
+     * Build plain text content from buffer.
+     *
+     * @return string
+     */
+    protected function buildTextContent()
+    {
+        $data = array_map(function ($entry) {
+            if ('setter' == $entry['type']) {
+                return $this->formatter->formatSetter($entry['key'], $entry['value'], $entry['comment'], $entry['export']);
+            }
+
+            if ('comment' == $entry['type']) {
+                return $this->formatter->formatComment($entry['comment']);
+            }
+
+            return '';
+        }, $this->buffer);
+
+        return implode(PHP_EOL, $data) . PHP_EOL;
+    }
+
+    /**
      * Append empty line to buffer.
      *
      * @return EnvironmentWriter
@@ -90,6 +112,18 @@ class EnvironmentWriter implements WriterInterface
     }
 
     /**
+     * Append new line to buffer.
+     *
+     * @return EnvironmentWriter
+     */
+    protected function appendEntry(array $data = [])
+    {
+        $this->buffer[] = array_merge($this->entryTemplate, $data);
+
+        return $this;
+    }
+
+    /**
      * Append comment line to buffer.
      *
      * @return EnvironmentWriter
@@ -97,8 +131,8 @@ class EnvironmentWriter implements WriterInterface
     public function appendComment(string $comment)
     {
         return $this->appendEntry([
-            'type'    => 'comment',
-            'comment' => (string) $comment,
+            'type' => 'comment',
+            'comment' => (string)$comment,
         ]);
     }
 
@@ -110,11 +144,11 @@ class EnvironmentWriter implements WriterInterface
     public function appendSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
     {
         return $this->appendEntry([
-            'type'    => 'setter',
-            'export'  => $export,
-            'key'     => (string) $key,
-            'value'   => (string) $value,
-            'comment' => (string) $comment,
+            'type' => 'setter',
+            'export' => $export,
+            'key' => (string)$key,
+            'value' => (string)$value,
+            'comment' => (string)$comment,
         ]);
     }
 
@@ -126,9 +160,9 @@ class EnvironmentWriter implements WriterInterface
     public function updateSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
     {
         $data = [
-            'export'  => $export,
-            'value'   => (string) $value,
-            'comment' => (string) $comment,
+            'export' => $export,
+            'value' => (string)$value,
+            'comment' => (string)$comment,
         ];
 
         array_walk($this->buffer, function (&$entry, $index) use ($key, $data) {
@@ -148,7 +182,7 @@ class EnvironmentWriter implements WriterInterface
     public function updateSetterComment(string $key, ?string $comment = null)
     {
         $data = [
-            'comment' => (string) $comment,
+            'comment' => (string)$comment,
         ];
 
         array_walk($this->buffer, function (&$entry, $index) use ($key, $data) {
@@ -208,53 +242,19 @@ class EnvironmentWriter implements WriterInterface
     }
 
     /**
-     * Append new line to buffer.
-     *
-     * @return EnvironmentWriter
-     */
-    protected function appendEntry(array $data = [])
-    {
-        $this->buffer[] = array_merge($this->entryTemplate, $data);
-
-        return $this;
-    }
-
-    /**
      * Tests file for writability. If the file doesn't exist, check
      * the parent directory for writability so the file can be created.
      *
      * @param mixed $filePath
      *
+     * @return void
      * @throws UnableWriteToFileException
      *
-     * @return void
      */
     protected function ensureFileIsWritable($filePath)
     {
         if ((is_file($filePath) && !is_writable($filePath)) || (!is_file($filePath) && !is_writable(dirname($filePath)))) {
             throw new UnableWriteToFileException(sprintf('Unable to write to the file at %s.', $filePath));
         }
-    }
-
-    /**
-     * Build plain text content from buffer.
-     *
-     * @return string
-     */
-    protected function buildTextContent()
-    {
-        $data = array_map(function ($entry) {
-            if ('setter' == $entry['type']) {
-                return $this->formatter->formatSetter($entry['key'], $entry['value'], $entry['comment'], $entry['export']);
-            }
-
-            if ('comment' == $entry['type']) {
-                return $this->formatter->formatComment($entry['comment']);
-            }
-
-            return '';
-        }, $this->buffer);
-
-        return implode(PHP_EOL, $data) . PHP_EOL;
     }
 }

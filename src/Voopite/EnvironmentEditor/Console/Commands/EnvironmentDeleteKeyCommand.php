@@ -69,7 +69,7 @@ class EnvironmentDeleteKeyCommand extends Command
         $filePath = $this->stringToType($this->option('filepath'));
 
         $this->filePath = (is_string($filePath)) ? base_path($filePath) : null;
-        $this->key      = $this->argument('key');
+        $this->key = $this->argument('key');
     }
 
     /**

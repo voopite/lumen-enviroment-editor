@@ -105,17 +105,17 @@ class EnvironmentSetKeyCommand extends Command
      */
     protected function transferInputsToProperties()
     {
-        $filePath       = $this->stringToType($this->option('filepath'));
+        $filePath = $this->stringToType($this->option('filepath'));
         $this->filePath = (is_string($filePath)) ? base_path($filePath) : null;
 
         $this->forceRestore = $this->option('restore');
 
-        $restorePath       = $this->stringToType($this->option('restore-path'));
+        $restorePath = $this->stringToType($this->option('restore-path'));
         $this->restorePath = (is_string($restorePath)) ? base_path($restorePath) : null;
 
-        $this->key       = $this->argument('key');
-        $this->value     = $this->stringToType($this->argument('value'));
-        $this->comment   = $this->stringToType($this->argument('comment'));
+        $this->key = $this->argument('key');
+        $this->value = $this->stringToType($this->argument('value'));
+        $this->comment = $this->stringToType($this->argument('comment'));
         $this->exportKey = $this->option('export-key');
     }
 

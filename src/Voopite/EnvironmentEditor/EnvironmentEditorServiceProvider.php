@@ -28,7 +28,7 @@ class EnvironmentEditorServiceProvider extends ServiceProvider implements Deferr
          * Loading and publishing package's config.
          */
         $packageConfigPath = __DIR__ . '/Config/config.php';
-        $appConfigPath     = config_path('environment-editor.php');
+        $appConfigPath = config_path('environment-editor.php');
 
         $this->mergeConfigFrom($packageConfigPath, 'environment-editor');
 
@@ -50,21 +50,6 @@ class EnvironmentEditorServiceProvider extends ServiceProvider implements Deferr
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [
-            'environment-editor',
-            'command.environment-editor.deletekey',
-            'command.environment-editor.getkeys',
-            'command.environment-editor.setkey',
-        ];
-    }
-
-    /**
      * Register commands.
      *
      * @return void
@@ -78,5 +63,20 @@ class EnvironmentEditorServiceProvider extends ServiceProvider implements Deferr
         $this->commands('command.environment-editor.deletekey');
         $this->commands('command.environment-editor.getkeys');
         $this->commands('command.environment-editor.setkey');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'environment-editor',
+            'command.environment-editor.deletekey',
+            'command.environment-editor.getkeys',
+            'command.environment-editor.setkey',
+        ];
     }
 }

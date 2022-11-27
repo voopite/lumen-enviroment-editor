@@ -64,6 +64,20 @@ class EnvironmentReader implements ReaderInterface
     }
 
     /**
+     * Ensures the given file is readable.
+     *
+     * @return void
+     * @throws UnableReadFileException
+     *
+     */
+    protected function ensureFileIsReadable()
+    {
+        if (!is_readable($this->filePath) || !is_file($this->filePath)) {
+            throw new UnableReadFileException(sprintf('Unable to read the file at %s.', $this->filePath));
+        }
+    }
+
+    /**
      * Get informations of all entries from file content.
      *
      * @param bool $withParsedData Includes the parsed data in the result
@@ -74,7 +88,7 @@ class EnvironmentReader implements ReaderInterface
     {
         $entries = $this->getEntriesFromFile();
 
-        if (!(bool) $withParsedData) {
+        if (!(bool)$withParsedData) {
             return $entries;
         }
 
@@ -83,6 +97,18 @@ class EnvironmentReader implements ReaderInterface
 
             return $info;
         }, $entries);
+    }
+
+    /**
+     * Read content into an array of lines with auto-detected line endings.
+     *
+     * @return array
+     */
+    protected function getEntriesFromFile()
+    {
+        $this->ensureFileIsReadable();
+
+        return $this->parser->parseFile($this->filePath);
     }
 
     /**
@@ -99,40 +125,14 @@ class EnvironmentReader implements ReaderInterface
 
             if ('setter' == $data['type']) {
                 $carry[$data['key']] = [
-                    'line'    => $entry['line'],
-                    'export'  => $data['export'],
-                    'value'   => $data['value'],
+                    'line' => $entry['line'],
+                    'export' => $data['export'],
+                    'value' => $data['value'],
                     'comment' => $data['comment'],
                 ];
             }
 
             return $carry;
         }, []);
-    }
-
-    /**
-     * Read content into an array of lines with auto-detected line endings.
-     *
-     * @return array
-     */
-    protected function getEntriesFromFile()
-    {
-        $this->ensureFileIsReadable();
-
-        return $this->parser->parseFile($this->filePath);
-    }
-
-    /**
-     * Ensures the given file is readable.
-     *
-     * @throws UnableReadFileException
-     *
-     * @return void
-     */
-    protected function ensureFileIsReadable()
-    {
-        if (!is_readable($this->filePath) || !is_file($this->filePath)) {
-            throw new UnableReadFileException(sprintf('Unable to read the file at %s.', $this->filePath));
-        }
     }
 }

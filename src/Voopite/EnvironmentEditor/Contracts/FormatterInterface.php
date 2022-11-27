@@ -16,9 +16,9 @@ interface FormatterInterface
     /**
      * Build an setter from the individual components for writing.
      *
-     * @param null|string $value   optional
+     * @param null|string $value optional
      * @param null|string $comment optional
-     * @param bool        $export  optional
+     * @param bool $export optional
      *
      * @return string
      */

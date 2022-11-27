@@ -28,17 +28,17 @@ abstract class Parser
         $lines = file($filePath, FILE_IGNORE_NEW_LINES); // The older method
         // $lines = preg_split("/(\r\n|\n|\r)/", rtrim(@file_get_contents($filePath))); // The newer method
 
-        $output          = [];
-        $multiline       = false;
+        $output = [];
+        $multiline = false;
         $multilineBuffer = [];
-        $lineNumber      = 0;
+        $lineNumber = 0;
 
         foreach ($lines as $index => $line) {
             list($multiline, $line, $multilineBuffer) = self::multilineProcess($multiline, $line, $multilineBuffer);
 
             if (!$multiline) {
                 $output[] = [
-                    'line'     => ++$lineNumber,
+                    'line' => ++$lineNumber,
                     'raw_data' => $line,
                 ];
 
@@ -50,48 +50,10 @@ abstract class Parser
     }
 
     /**
-     * Parses an entry data into an array of type, export allowed or not,
-     * key, value, and comment information.
-     *
-     * @param string $data The entry data
-     *
-     * @return array
-     */
-    public function parseEntry(string $data)
-    {
-        $output = [
-            'type'    => 'unknown',
-            'export'  => false,
-            'key'     => '',
-            'value'   => '',
-            'comment' => '',
-        ];
-
-        if ($this->isEmpty($data)) {
-            $output['type'] = 'empty';
-
-            return $output;
-        }
-
-        if ($this->isComment($data)) {
-            $output['type']    = 'comment';
-            $output['comment'] = $this->normaliseComment($data);
-
-            return $output;
-        }
-
-        if ($this->looksLikeSetter($data)) {
-            return $this->parseSetter($data);
-        }
-
-        return $output;
-    }
-
-    /**
      * Used to make all multiline variable process.
      *
-     * @param bool     $multiline
-     * @param string   $line
+     * @param bool $multiline
+     * @param string $line
      * @param string[] $buffer
      *
      * @return array
@@ -108,8 +70,8 @@ abstract class Parser
 
             if (self::looksLikeMultilineStop($line, $started)) {
                 $multiline = false;
-                $line      = implode(PHP_EOL, $buffer);
-                $buffer    = [];
+                $line = implode(PHP_EOL, $buffer);
+                $buffer = [];
             }
         }
 
@@ -136,7 +98,7 @@ abstract class Parser
      * Determine if the given line can be the start of a multiline variable.
      *
      * @param string $line
-     * @param bool   $started
+     * @param bool $started
      *
      * @return bool
      */
@@ -172,48 +134,41 @@ abstract class Parser
     }
 
     /**
-     * Parses a setter into an array of type, export allowed or not,
+     * Parses an entry data into an array of type, export allowed or not,
      * key, value, and comment information.
      *
-     * @param string $setter
+     * @param string $data The entry data
      *
      * @return array
      */
-    protected function parseSetter($setter)
+    public function parseEntry(string $data)
     {
-        list($key, $data) = array_map('trim', explode('=', $setter, 2));
-
         $output = [
-            'type'    => 'setter',
-            'export'  => $this->isExportKey($key),
-            'key'     => $this->normaliseKey($key),
-            'value'   => '',
+            'type' => 'unknown',
+            'export' => false,
+            'key' => '',
+            'value' => '',
             'comment' => '',
         ];
 
-        list($output['value'], $output['comment']) = $this->parseSetterData($data);
+        if ($this->isEmpty($data)) {
+            $output['type'] = 'empty';
+
+            return $output;
+        }
+
+        if ($this->isComment($data)) {
+            $output['type'] = 'comment';
+            $output['comment'] = $this->normaliseComment($data);
+
+            return $output;
+        }
+
+        if ($this->looksLikeSetter($data)) {
+            return $this->parseSetter($data);
+        }
 
         return $output;
-    }
-
-    /**
-     * Normalising the key of setter to output.
-     *
-     * @return string
-     */
-    protected function normaliseKey(string $key)
-    {
-        return trim(str_replace(['export ', '\'', '"'], '', $key));
-    }
-
-    /**
-     * Normalising the comment to output.
-     *
-     * @return string
-     */
-    protected function normaliseComment(string $comment)
-    {
-        return rtrim(ltrim($comment, '# '), ' ');
     }
 
     /**
@@ -239,6 +194,16 @@ abstract class Parser
     }
 
     /**
+     * Normalising the comment to output.
+     *
+     * @return string
+     */
+    protected function normaliseComment(string $comment)
+    {
+        return rtrim(ltrim($comment, '# '), ' ');
+    }
+
+    /**
      * Determine if the given entry looks like it's setting a key.
      *
      * @return bool
@@ -246,6 +211,31 @@ abstract class Parser
     protected function looksLikeSetter(string $data)
     {
         return false !== strpos($data, '=') && 0 !== strpos($data, '=');
+    }
+
+    /**
+     * Parses a setter into an array of type, export allowed or not,
+     * key, value, and comment information.
+     *
+     * @param string $setter
+     *
+     * @return array
+     */
+    protected function parseSetter($setter)
+    {
+        list($key, $data) = array_map('trim', explode('=', $setter, 2));
+
+        $output = [
+            'type' => 'setter',
+            'export' => $this->isExportKey($key),
+            'key' => $this->normaliseKey($key),
+            'value' => '',
+            'comment' => '',
+        ];
+
+        list($output['value'], $output['comment']) = $this->parseSetterData($data);
+
+        return $output;
     }
 
     /**
@@ -265,6 +255,27 @@ abstract class Parser
     }
 
     /**
+     * Normalising the key of setter to output.
+     *
+     * @return string
+     */
+    protected function normaliseKey(string $key)
+    {
+        return trim(str_replace(['export ', '\'', '"'], '', $key));
+    }
+
+    /**
+     * Parse setter data into array of value, comment information.
+     *
+     * @param string $data
+     *
+     * @return array
+     * @throws InvalidValueException
+     *
+     */
+    abstract protected function parseSetterData($data);
+
+    /**
      * Generate a friendly error message.
      *
      * @return string
@@ -277,15 +288,4 @@ abstract class Parser
             strtok($subject, "\n")
         );
     }
-
-    /**
-     * Parse setter data into array of value, comment information.
-     *
-     * @param string $data
-     *
-     * @throws InvalidValueException
-     *
-     * @return array
-     */
-    abstract protected function parseSetterData($data);
 }

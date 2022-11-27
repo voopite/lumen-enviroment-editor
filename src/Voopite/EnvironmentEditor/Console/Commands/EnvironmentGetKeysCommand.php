@@ -38,24 +38,24 @@ class EnvironmentGetKeysCommand extends Command
      */
     public function fire()
     {
-        $filePath       = $this->stringToType($this->option('filepath'));
+        $filePath = $this->stringToType($this->option('filepath'));
         $this->filePath = (is_string($filePath)) ? base_path($filePath) : null;
 
         $allKeys = $this->editor->load($this->filePath)->getKeys();
-        $output  = [];
+        $output = [];
 
         foreach ($allKeys as $key => $info) {
             $data = [
-                'key'     => $key,
-                'export'  => ($info['export']) ? 'true' : 'false',
-                'value'   => $info['value'],
+                'key' => $key,
+                'export' => ($info['export']) ? 'true' : 'false',
+                'value' => $info['value'],
                 'comment' => $info['comment'],
-                'line'    => $info['line'],
+                'line' => $info['line'],
             ];
             $output[] = $data;
         }
 
-        $total   = count($output);
+        $total = count($output);
         $headers = ['Key', 'Use export', 'Value', 'Comment', 'In line'];
 
         $this->line('Loading keys in your file...');

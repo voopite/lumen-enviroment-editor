@@ -15,6 +15,23 @@ use Jackiedo\DotenvEditor\Exceptions\InvalidKeyException;
 class Formatter implements FormatterInterface
 {
     /**
+     * Build an setter from the individual components for writing.
+     *
+     * @param null|string $value optional
+     * @param null|string $comment optional
+     * @param bool $export optional
+     *
+     * @return string
+     */
+    public function formatSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
+    {
+        $key = $this->formatKey($key, $export);
+        $value = $this->formatValue($value, $this->formatComment($comment));
+
+        return "{$key}={$value}";
+    }
+
+    /**
      * Formatting the key of setter to writing.
      *
      * @param bool $export optional
@@ -23,7 +40,7 @@ class Formatter implements FormatterInterface
      */
     public function formatKey(string $key, bool $export = false)
     {
-        $key = trim(str_replace(['export ', '\'', '"'], '', (string) $key));
+        $key = trim(str_replace(['export ', '\'', '"'], '', (string)$key));
 
         if (!self::isValidKey($key)) {
             throw new InvalidKeyException(sprintf('There is an invalid setter key. Caught at [%s].', $key));
@@ -37,48 +54,28 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * Formatting the comment to writing.
+     * Determine if the input string is valid key.
      *
-     * @return string
+     * @return bool
      */
-    public function formatComment(?string $comment)
+    protected function isValidKey(string $key)
     {
-        $comment = rtrim(ltrim((string) $comment, '# '), ' ');
-        $comment = preg_replace('/(\r\n|\n|\r)/', ' ', $comment);
-
-        return (strlen($comment) > 0) ? "# {$comment}" : '';
-    }
-
-    /**
-     * Build an setter from the individual components for writing.
-     *
-     * @param null|string $value   optional
-     * @param null|string $comment optional
-     * @param bool        $export  optional
-     *
-     * @return string
-     */
-    public function formatSetter(string $key, ?string $value = null, ?string $comment = null, bool $export = false)
-    {
-        $key   = $this->formatKey($key, $export);
-        $value = $this->formatValue($value, $this->formatComment($comment));
-
-        return "{$key}={$value}";
+        return 1 === preg_match('/\A[a-zA-Z0-9_.]+\z/', $key);
     }
 
     /**
      * Formatting the value of setter to writing.
      *
-     * @param string      $value   optional
+     * @param string $value optional
      * @param null|string $comment optional
      *
      * @return string
      */
     protected function formatValue(?string $value, ?string $comment = null)
     {
-        $value       = (string) $value;
-        $comment     = (string) $comment;
-        $hasComment  = strlen($comment) > 0;
+        $value = (string)$value;
+        $comment = (string)$comment;
+        $hasComment = strlen($comment) > 0;
         $forceQuotes = $hasComment && (0 == strlen($value));
 
         if ($forceQuotes || 1 === preg_match('/[#\s"\'\\\\]|\$\{[a-zA-Z0-9_.]+\}|\\\\n/', $value)) {
@@ -91,12 +88,15 @@ class Formatter implements FormatterInterface
     }
 
     /**
-     * Determine if the input string is valid key.
+     * Formatting the comment to writing.
      *
-     * @return bool
+     * @return string
      */
-    protected function isValidKey(string $key)
+    public function formatComment(?string $comment)
     {
-        return 1 === preg_match('/\A[a-zA-Z0-9_.]+\z/', $key);
+        $comment = rtrim(ltrim((string)$comment, '# '), ' ');
+        $comment = preg_replace('/(\r\n|\n|\r)/', ' ', $comment);
+
+        return (strlen($comment) > 0) ? "# {$comment}" : '';
     }
 }
