@@ -1,0 +1,69 @@
+{
+  "name": "voopite/lumen-environment-editor",
+  "description": "Simple .env file editor tool for Lumen microservices",
+  "keywords": [
+    "lumen",
+    "env",
+    "environment",
+    "editor",
+    "dotenv",
+    "environment-editor"
+  ],
+  "homepage": "https://github.com/voopite/lumen-environment-editor",
+  "type": "library",
+  "require": {
+    "php": "^8.0",
+    "illuminate/console": "^9.0|^8.0|7.0|^6.0|^5.8",
+    "illuminate/contracts": "^9.0|^8.0|7.0|^6.0|^5.8",
+    "illuminate/support": "^9.0|^8.0|7.0|^6.0|^5.8",
+    "jackiedo/path-helper": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "orchestra/testbench": "^7.7",
+    "friendsofphp/php-cs-fixer": "^3.10",
+    "nunomaduro/collision": "^6.3",
+    "pestphp/pest": "^1.22"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Voopite\\EnvironmentEditor\\": "src/Voopite/EnvironmentEditor/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Voopite\\EnvironmentEditor\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "pest",
+    "test:coverage": "php -d pcov.enabled=1 ./vendor/bin/pest --coverage --coverage-clover=.coverage/clover.xml --coverage-html=.coverage",
+    "post-autoload-dump": [
+      "@php ./vendor/bin/testbench package:discover --ansi"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Voopite\\EnvironmentEditor\\EnvironmentEditorServiceProvider"
+      ],
+      "aliases": {
+        "DotenvEditor": "Voopite\\EnvironmentEditor\\Facades\\EnvironmentEditor"
+      }
+    }
+  },
+  "authors": [
+    {
+      "name": "Ibson Machado",
+      "email": "ibson.machado@voopite.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
