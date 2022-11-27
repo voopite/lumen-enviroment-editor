@@ -23,16 +23,6 @@ use Jackiedo\PathHelper\Path;
 class EnvironmentEditor
 {
     /**
-     * The backup filename prefix.
-     */
-    public const BACKUP_FILENAME_PREFIX = '.env.backup_';
-
-    /**
-     * The backup filename suffix.
-     */
-    public const BACKUP_FILENAME_SUFFIX = '';
-
-    /**
      * The IoC Container.
      *
      * @var \Illuminate\Foundation\Application
@@ -57,7 +47,7 @@ class EnvironmentEditor
     protected $combatibleParserMap = [
         '5.0.0' => ParserV3::class,  // Laravel 8.x|9.x using "vlucas/dotenv" ^v5.0|^5.4
         '4.0.0' => ParserV2::class,  // Laravel 7.x using "vlucas/dotenv" ^v4.0
-        '3.3.0' => ParserV1::class,   // Laravel 5.8 and 6.x using "vlucas/dotenv" ^v3.3
+        '3.3.0' => ParserV1::class,  // Laravel 5.8 and 6.x using "vlucas/dotenv" ^v3.3
     ];
 
     /**
@@ -442,9 +432,6 @@ class EnvironmentEditor
      */
     public function save(bool $rebuildBuffer = true)
     {
-        if (is_file($this->filePath) && $this->autoBackup) {
-            $this->backup();
-        }
 
         $this->writer->saveTo($this->filePath);
 
@@ -455,185 +442,7 @@ class EnvironmentEditor
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Working with backups
-    |--------------------------------------------------------------------------
-    |
-    | autoBackup()
-    | backup()
-    | getBackups()
-    | getLatestBackup()
-    | restore()
-    | deleteBackups()
-    | deleteBackup()
-    |
-    */
 
-    /**
-     * Switching of the auto backup mode.
-     *
-     * @return EnvironmentEditor
-     */
-    public function autoBackup(bool $on = true)
-    {
-        $this->autoBackup = $on;
-
-        return $this;
-    }
-
-    /**
-     * Create one backup of loaded file.
-     *
-     * @return EnvironmentEditor
-     *@throws FileNotFoundException
-     *
-     */
-    public function backup()
-    {
-        if (!is_file($this->filePath)) {
-            throw new FileNotFoundException("File does not exist at path {$this->filePath}");
-
-            return false;
-        }
-
-        // Make sure the backup directory exists
-        $this->createBackupFolder();
-
-        copy(
-            $this->filePath,
-            $this->backupPath . self::BACKUP_FILENAME_PREFIX . date('Y_m_d_His') . self::BACKUP_FILENAME_SUFFIX
-        );
-
-        return $this;
-    }
-
-    /**
-     * Return an array with all available backups.
-     *
-     * @return array
-     */
-    public function getBackups()
-    {
-        $output = [];
-
-        if (!is_dir($this->backupPath)) {
-            return $output;
-        }
-
-        $filenameRegex = '/^' . preg_quote(self::BACKUP_FILENAME_PREFIX, '/') . '(\d{4})_(\d{2})_(\d{2})_(\d{2})(\d{2})(\d{2})' . preg_quote(self::BACKUP_FILENAME_SUFFIX, '/') . '$/';
-        $backups       = array_filter(array_diff(scandir($this->backupPath), ['..', '.']), function ($backup) use ($filenameRegex) {
-            return preg_match($filenameRegex, $backup);
-        });
-
-        foreach ($backups as $backup) {
-            $output[] = [
-                'filename'   => $backup,
-                'filepath'   => Path::osStyle($this->backupPath . $backup),
-                'created_at' => preg_replace($filenameRegex, '$1-$2-$3 $4:$5:$6', $backup),
-            ];
-        }
-
-        return $output;
-    }
-
-    /**
-     * Return the information of the latest backup file.
-     *
-     * @return array
-     */
-    public function getLatestBackup()
-    {
-        $backups = $this->getBackups();
-
-        if (empty($backups)) {
-            return null;
-        }
-
-        $latestBackup = 0;
-
-        foreach ($backups as $backup) {
-            $timestamp = strtotime($backup['created_at']);
-
-            if ($timestamp > $latestBackup) {
-                $latestBackup = $timestamp;
-            }
-        }
-
-        $fileName  = self::BACKUP_FILENAME_PREFIX . date('Y_m_d_His', $latestBackup) . self::BACKUP_FILENAME_SUFFIX;
-        $filePath  = Path::osStyle($this->backupPath . $fileName);
-        $createdAt = date('Y-m-d H:i:s', $latestBackup);
-
-        return [
-            'filename'   => $fileName,
-            'filepath'   => $filePath,
-            'created_at' => $createdAt,
-        ];
-    }
-
-    /**
-     * Restore the loaded file from latest backup file or from special file.
-     *
-     * @return EnvironmentEditor
-     *@throws FileNotFoundException
-     *
-     * @throws NoBackupAvailableException
-     */
-    public function restore(?string $filePath = null)
-    {
-        if (is_null($filePath)) {
-            $latestBackup = $this->getLatestBackup();
-
-            if (is_null($latestBackup)) {
-                throw new NoBackupAvailableException('There are no available backups!');
-            }
-
-            $filePath = $latestBackup['filepath'];
-        }
-
-        if (!is_file($filePath)) {
-            throw new FileNotFoundException("File does not exist at path {$filePath}");
-        }
-
-        copy($filePath, $this->filePath);
-        $this->buildBuffer();
-
-        return $this;
-    }
-
-    /**
-     * Delete all or the given backup files.
-     *
-     * @return EnvironmentEditor
-     */
-    public function deleteBackups(array $filePaths = [])
-    {
-        if (empty($filePaths)) {
-            $allBackups = $this->getBackups();
-
-            foreach ($allBackups as $backup) {
-                $filePaths[] = $backup['filepath'];
-            }
-        }
-
-        foreach ($filePaths as $filePath) {
-            if (is_file($filePath)) {
-                unlink($filePath);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Delete the given backup file.
-     *
-     * @return EnvironmentEditor
-     */
-    public function deleteBackup(string $filePath)
-    {
-        return $this->deleteBackups([$filePath]);
-    }
 
     /**
      * Initialize content for editor.
