@@ -28,7 +28,9 @@ class EnvironmentEditorServiceProvider extends ServiceProvider implements Deferr
          * Loading and publishing package's config.
          */
         $packageConfigPath = __DIR__ . '/Config/config.php';
-        $appConfigPath = config_path('environment-editor.php');
+        $path = 'environment-editor.php';
+        $appConfigPath=  $this->app->basePath() . '/config' . ($path ? '/' . $path : $path);
+
 
         $this->mergeConfigFrom($packageConfigPath, 'environment-editor');
 
