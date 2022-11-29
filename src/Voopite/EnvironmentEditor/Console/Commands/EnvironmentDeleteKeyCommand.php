@@ -4,7 +4,7 @@ namespace Voopite\EnvironmentEditor\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
+use Voopite\EnvironmentEditor\Console\Traits\CreateCommandInstanceTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 

@@ -2,8 +2,8 @@
 
 namespace Voopite\EnvironmentEditor\Workers\Formatters;
 
-use Jackiedo\DotenvEditor\Contracts\FormatterInterface;
-use Jackiedo\DotenvEditor\Exceptions\InvalidKeyException;
+use Voopite\EnvironmentEditor\Contracts\FormatterInterface;
+use Voopite\EnvironmentEditor\Exceptions\InvalidKeyException;
 
 /**
  * The .env formatter.

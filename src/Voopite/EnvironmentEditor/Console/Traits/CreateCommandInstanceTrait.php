@@ -2,7 +2,7 @@
 
 namespace Voopite\EnvironmentEditor\Console\Traits;
 
-use Jackiedo\DotenvEditor\EnvironmentEditor;
+use Voopite\EnvironmentEditor\EnvironmentEditor;
 
 trait CreateCommandInstanceTrait
 {

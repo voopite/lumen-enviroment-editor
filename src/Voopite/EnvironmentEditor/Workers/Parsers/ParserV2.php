@@ -2,8 +2,8 @@
 
 namespace Voopite\EnvironmentEditor\Workers\Parsers;
 
-use Jackiedo\DotenvEditor\Contracts\ParserInterface;
-use Jackiedo\DotenvEditor\Exceptions\InvalidValueException;
+use Voopite\EnvironmentEditor\Contracts\ParserInterface;
+use Voopite\EnvironmentEditor\Exceptions\InvalidValueException;
 
 /**
  * The reader parser V2 class.

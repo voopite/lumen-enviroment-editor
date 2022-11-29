@@ -3,7 +3,7 @@
 namespace Voopite\EnvironmentEditor\Console\Commands;
 
 use Illuminate\Console\Command;
-use Jackiedo\DotenvEditor\Console\Traits\CreateCommandInstanceTrait;
+use Voopite\EnvironmentEditor\Console\Traits\CreateCommandInstanceTrait;
 use Symfony\Component\Console\Input\InputOption;
 
 class EnvironmentGetKeysCommand extends Command

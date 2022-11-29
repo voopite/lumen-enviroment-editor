@@ -2,7 +2,7 @@
 
 namespace Voopite\EnvironmentEditor\Workers\Parsers;
 
-use Jackiedo\DotenvEditor\Exceptions\InvalidValueException;
+use Voopite\EnvironmentEditor\Exceptions\InvalidValueException;
 
 /**
  * The Parser abstract.

@@ -4,9 +4,9 @@ namespace Voopite\EnvironmentEditor;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-use Jackiedo\DotenvEditor\Console\Commands\EnvironmentDeleteKeyCommand;
-use Jackiedo\DotenvEditor\Console\Commands\EnvironmentGetKeysCommand;
-use Jackiedo\DotenvEditor\Console\Commands\EnvironmentSetKeyCommand;
+use Voopite\EnvironmentEditor\Console\Commands\EnvironmentDeleteKeyCommand;
+use Voopite\EnvironmentEditor\Console\Commands\EnvironmentGetKeysCommand;
+use Voopite\EnvironmentEditor\Console\Commands\EnvironmentSetKeyCommand;
 
 /**
  * EnvironmentEditorServiceProvider.

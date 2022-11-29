@@ -4,13 +4,13 @@ namespace Voopite\EnvironmentEditor;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Container\Container;
-use Jackiedo\DotenvEditor\Exceptions\FileNotFoundException;
-use Jackiedo\DotenvEditor\Exceptions\KeyNotFoundException;
-use Jackiedo\DotenvEditor\Exceptions\NoBackupAvailableException;
-use Jackiedo\DotenvEditor\Workers\Formatters\Formatter;
-use Jackiedo\DotenvEditor\Workers\Parsers\ParserV1;
-use Jackiedo\DotenvEditor\Workers\Parsers\ParserV2;
-use Jackiedo\DotenvEditor\Workers\Parsers\ParserV3;
+use Voopite\EnvironmentEditor\Exceptions\FileNotFoundException;
+use Voopite\EnvironmentEditor\Exceptions\KeyNotFoundException;
+use Voopite\EnvironmentEditor\Exceptions\NoBackupAvailableException;
+use Voopite\EnvironmentEditor\Workers\Formatters\Formatter;
+use Voopite\EnvironmentEditor\Workers\Parsers\ParserV1;
+use Voopite\EnvironmentEditor\Workers\Parsers\ParserV2;
+use Voopite\EnvironmentEditor\Workers\Parsers\ParserV3;
 use Jackiedo\PathHelper\Path;
 
 /**

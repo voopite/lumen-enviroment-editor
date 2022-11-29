@@ -2,9 +2,9 @@
 
 namespace Voopite\EnvironmentEditor;
 
-use Jackiedo\DotenvEditor\Contracts\ParserInterface;
-use Jackiedo\DotenvEditor\Contracts\ReaderInterface;
-use Jackiedo\DotenvEditor\Exceptions\UnableReadFileException;
+use Voopite\EnvironmentEditor\Contracts\ParserInterface;
+use Voopite\EnvironmentEditor\Contracts\ReaderInterface;
+use Voopite\EnvironmentEditor\Exceptions\UnableReadFileException;
 
 /**
  * The EnvironmentReader class.
@@ -25,7 +25,7 @@ class EnvironmentReader implements ReaderInterface
     /**
      * The instance of Parser.
      *
-     * @var \Jackiedo\DotenvEditor\Workers\Parsers\Parser
+     * @var \Voopite\EnvironmentEditor\Workers\Parsers\Parser
      */
     protected $parser;
 

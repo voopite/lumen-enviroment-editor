@@ -2,9 +2,9 @@
 
 namespace Voopite\EnvironmentEditor;
 
-use Jackiedo\DotenvEditor\Contracts\FormatterInterface;
-use Jackiedo\DotenvEditor\Contracts\WriterInterface;
-use Jackiedo\DotenvEditor\Exceptions\UnableWriteToFileException;
+use Voopite\EnvironmentEditor\Contracts\FormatterInterface;
+use Voopite\EnvironmentEditor\Contracts\WriterInterface;
+use Voopite\EnvironmentEditor\Exceptions\UnableWriteToFileException;
 
 /**
  * The EnvironmentWriter writer.
@@ -25,7 +25,7 @@ class EnvironmentWriter implements WriterInterface
     /**
      * The instance of Formatter.
      *
-     * @var \Jackiedo\DotenvEditor\Workers\Formatters\Formatter
+     * @var \Voopite\EnvironmentEditor\Workers\Formatters\Formatter
      */
     protected $formatter;
 
